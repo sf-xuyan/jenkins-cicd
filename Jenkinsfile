@@ -30,9 +30,9 @@ node {
                 rc = sh returnStatus: true, script:"\"${sfdx}\" force:auth:logout --targetusername ${SF_USERNAME} -p"
                 rc = bat returnStatus: true, script: "\"${sfdx}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SF_HOST}"
             }
+            println rc
             if (rc != 0) { error 'Org authorization has failed' }
 
-			println rc
 			//Realizamos el despliegue de todo force-app
 			if (isUnix()) {
                 rmsg = sh returnStdout: true, script: "${sfdx} force:source:deploy --sourcepath force-app -u ${SF_USERNAME}"
