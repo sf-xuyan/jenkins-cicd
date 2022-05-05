@@ -7,41 +7,43 @@ node {
     def JWT_KEY_CRED_ID="6ed79457-80b3-4d22-9d97-b7c7926b1bac" // Copy from Jenkins global credentials(server.key) Id
     def sfdx=tool 'sfdxtool'//We create a variable to use sfdx from the Custom Tool that we created in Part I
 
-    stage ( 'Check branch name' )  {  // First step to check that we are on the correct branch 
-        println env.BRANCH_NAME 
-        if ( env.BRANCH_NAME == "master" ){ // This name is the one we give when selecting the repository within the Pipeline 
-            println ( 'Script from master!' )
-            println sfdx
-        }
-        else{
-            println sfdx
-            error 'Incorrect branch'
-        }
-        checkout scm
-    }
-
-    withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {        
-        stage('Deployment') {
-            if (isUnix()) {//Para sistemas Unix el comando varía un poco el formato
-                rc = sh returnStatus: true, script: "${sfdx} force:auth:logout --targetusername ${SF_USERNAME} -p" //Hacemos logout para evitar un error
-				// Autorizamos la dev hub org
-                rc = sh returnStatus: true, script: "${sfdx} force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SF_HOST}"
-            }else{//ejecutamos lo mismo para sistemas Windows
-                rc = sh returnStatus: true, script:"\"${sfdx}\" force:auth:logout --targetusername ${SF_USERNAME} -p"
-                rc = bat returnStatus: true, script: "\"${sfdx}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SF_HOST}"
+    withEnv(["HOME=${env.WORKSPACE}"]) {
+        stage ( 'Check branch name' )  {  // First step to check that we are on the correct branch 
+            println env.BRANCH_NAME 
+            if ( env.BRANCH_NAME == "master" ){ // This name is the one we give when selecting the repository within the Pipeline 
+                println ( 'Script from master!' )
+                println sfdx
             }
-            println rc
-            if (rc != 0) { error 'Org authorization has failed' }
+            else{
+                println sfdx
+                error 'Incorrect branch'
+            }
+            checkout scm
+        }
 
-			//Realizamos el despliegue de todo force-app
-			if (isUnix()) {
-                rmsg = sh returnStdout: true, script: "${sfdx} force:source:deploy --sourcepath force-app -u ${SF_USERNAME}"
-			}else{
-               rmsg = bat returnStdout: true, script: "\"${sfdx}\" force:source:deploy --sourcepath force-app -u ${SF_USERNAME}"
-			}
-			  
-            printf rmsg
-            println(rmsg)
+        withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {        
+            stage('Deployment') {
+                if (isUnix()) {//Para sistemas Unix el comando varía un poco el formato
+                    rc = sh returnStatus: true, script: "${sfdx} force:auth:logout --targetusername ${SF_USERNAME} -p" //Hacemos logout para evitar un error
+                    // Autorizamos la dev hub org
+                    rc = sh returnStatus: true, script: "${sfdx} force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SF_HOST}"
+                }else{//ejecutamos lo mismo para sistemas Windows
+                    rc = sh returnStatus: true, script:"\"${sfdx}\" force:auth:logout --targetusername ${SF_USERNAME} -p"
+                    rc = bat returnStatus: true, script: "\"${sfdx}\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SF_HOST}"
+                }
+                println rc
+                if (rc != 0) { error 'Org authorization has failed' }
+
+                //Realizamos el despliegue de todo force-app
+                if (isUnix()) {
+                    rmsg = sh returnStdout: true, script: "${sfdx} force:source:deploy --sourcepath force-app -u ${SF_USERNAME}"
+                }else{
+                rmsg = bat returnStdout: true, script: "\"${sfdx}\" force:source:deploy --sourcepath force-app -u ${SF_USERNAME}"
+                }
+                
+                printf rmsg
+                println(rmsg)
+            }
         }
     }
 }
