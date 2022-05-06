@@ -33,7 +33,7 @@ node {
         withCredentials([file(credentialsId: SERVER_KEY_CREDENTALS_ID, variable: "server_key_file")]) {
 
             command "${toolbelt}/sfdx --version"
-            command "export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true"
+            command "security unlock-keychain -p ${KEYCHAINS_PWD} ${HOME}/Library/Keychains/login.keychain"
 
             // -------------------------------------------------------------------------
             // Authorize the Dev Hub org with JWT key and give it an alias.
