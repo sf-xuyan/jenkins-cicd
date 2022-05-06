@@ -3,13 +3,14 @@ import groovy.json.JsonSlurperClassic
 
 node {
 
-    def SF_CONSUMER_KEY=env.SF_CONSUMER_KEY ?: "3MVG9pRzvMkjMb6nq5_7vWB7bzj1AvzgpqUcBlXjDx6HcCZKgL5Ck.8WO2aexmvmyF2QrpGG7YHVYw2mEQqqF" // Copy from Salesforce Connected App
-    def SF_USERNAME=env.SF_USERNAME ?: "wilson@instance1.com" // org1 as the dev org
-    def SERVER_KEY_CREDENTALS_ID=env.SERVER_KEY_CREDENTALS_ID ?: "6ed79457-80b3-4d22-9d97-b7c7926b1bac" // Copy from Jenkins global credentials(server.key) Id
-    def TEST_LEVEL="RunLocalTests"
+    def SF_CONSUMER_KEY=env.SF_CONSUMER_KEY // Copy from Salesforce Connected App
+    def SF_USERNAME=env.SF_USERNAME // org1 as the dev org
+    def SERVER_KEY_CREDENTALS_ID=env.SERVER_KEY_CREDENTALS_ID // Copy from Jenkins global credentials(server.key) Id
+    def TEST_LEVEL=env.TEST_LEVEL ?: "RunLocalTests"
     // def PACKAGE_NAME='0Ho1U000000CaUzSAK'
     // def PACKAGE_VERSION
-    def SF_INSTANCE_URL=env.SF_INSTANCE_URL ?: "https://login.salesforce.com"
+    def SF_INSTANCE_URL=env.SF_INSTANCE_URL
+    def KEYCHAINS_PWD=env.KEYCHAINS_PWD
 
     def toolbelt=tool "toolbelt"
 
@@ -32,6 +33,7 @@ node {
         withCredentials([file(credentialsId: SERVER_KEY_CREDENTALS_ID, variable: "server_key_file")]) {
 
             command "${toolbelt}/sfdx --version"
+            command "security unlock-keychain -p ${KEYCHAINS_PWD}"
 
             // -------------------------------------------------------------------------
             // Authorize the Dev Hub org with JWT key and give it an alias.
