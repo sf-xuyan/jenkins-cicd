@@ -29,19 +29,19 @@ node {
     // JWT key credentials.
     // -------------------------------------------------------------------------
     
-    withEnv(["HOME=${env.WORKSPACE}"]) {
+    withEnv(["HOME=$env.WORKSPACE"]) {
         
         withCredentials([file(credentialsId: SERVER_KEY_CREDENTALS_ID, variable: "server_key_file")]) {
 
-            command "${toolbelt}/sfdx --version"
-            command "security unlock-keychain -p $KEYCHAINS_PWD /Users/yan.xu/Library/Keychains/jenkins-login.keychain-db"
+            command "$toolbelt/sfdx --version"
+            command "/usr/bin/security unlock-keychain -p $KEYCHAINS_PWD /Users/yan.xu/Library/Keychains/jenkins-login.keychain-db"
 
             // -------------------------------------------------------------------------
             // Authorize the Dev Hub org with JWT key and give it an alias.
             // -------------------------------------------------------------------------
 
             stage("Authorize Org") {
-                rc = command "${toolbelt}/sfdx force:auth:jwt:grant --instanceurl ${SF_INSTANCE_URL} --clientid ${SF_CONSUMER_KEY} --username ${SF_USERNAME} --jwtkeyfile ${server_key_file} --setdefaultdevhubusername --setalias ciorg"
+                rc = command "$toolbelt/sfdx force:auth:jwt:grant --instanceurl $SF_INSTANCE_URL --clientid $SF_CONSUMER_KEY --username $SF_USERNAME --jwtkeyfile $server_key_file --setdefaultdevhubusername --setalias ciorg"
                 if (rc != 0) {
                     error "Org authorization has failed."
                 }
@@ -53,7 +53,7 @@ node {
             // -------------------------------------------------------------------------
 
             stage("Deploy source") {
-                rc = command "${toolbelt}/sfdx force:source:deploy -x manifest/package.xml -l ${TEST_LEVEL} -u ciorg --json"
+                rc = command "$toolbelt/sfdx force:source:deploy -x manifest/package.xml -l $TEST_LEVEL -u ciorg --json"
                 if (rc != 0) {
                     error "Salesforce deploy to Org failed."
                 }
