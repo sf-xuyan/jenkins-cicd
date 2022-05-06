@@ -26,7 +26,10 @@ node {
             stage('Deployment') {
                 script {
                     sh """
-                    ${toolbelt} sfdx --version
+                    node --version
+                    """
+                    sh """
+                    ${toolbelt}/sfdx --version
                     """
                 }
                 // if (isUnix()) {//Para sistemas Unix el comando varía un poco el formato
