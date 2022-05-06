@@ -11,13 +11,9 @@ node {
     // def PACKAGE_VERSION
     def SF_INSTANCE_URL=env.SF_INSTANCE_URL
     def KEYCHAINS_PWD=env.KEYCHAINS_PWD
+    def SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
 
     def toolbelt=tool "toolbelt"
-
-    agent any
-    environment {
-        SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
-    }
 
     // -------------------------------------------------------------------------
     // Check out code from source control.

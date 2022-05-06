@@ -5,6 +5,7 @@ org2 -> qa
 ## FAQ
 Q1. Jenkins and Github trigger PUSH from specific branch
 A1. Refer to: https://stackoverflow.com/questions/60299093/jenkins-and-github-trigger-push-from-specific-branch
+[Configure Github Webhooks](https://medium.com/@r.kurchenko/setup-continuous-integration-based-on-salesforcedx-c9f461c4db03)
 Q2. Baby steps to get started
 A2. Refer to: https://avarna.force.com/s/blog-article/a067R00002qleJTQAY/cicd-en-salesforce-jenkins-sfdx-y-git-bitbucket?language=es
 Q3. good to know the auth issue
