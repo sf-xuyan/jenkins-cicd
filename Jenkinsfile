@@ -14,6 +14,11 @@ node {
 
     def toolbelt=tool "toolbelt"
 
+    agent any
+    environment {
+        SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
+    }
+
     // -------------------------------------------------------------------------
     // Check out code from source control.
     // -------------------------------------------------------------------------
@@ -33,7 +38,6 @@ node {
         withCredentials([file(credentialsId: SERVER_KEY_CREDENTALS_ID, variable: "server_key_file")]) {
 
             command "${toolbelt}/sfdx --version"
-            command "/usr/bin/security add-generic-password -a local -s sfdx -w ${KEYCHAINS_PWD}"
 
             // -------------------------------------------------------------------------
             // Authorize the Dev Hub org with JWT key and give it an alias.
