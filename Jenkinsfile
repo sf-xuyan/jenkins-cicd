@@ -35,7 +35,6 @@ node {
 
             command "${toolbelt}/sfdx --version"
             command "security unlock-keychain -p $KEYCHAINS_PWD /Users/yan.xu/Library/Keychains/jenkins-login.keychain-db"
-            printf "123"
 
             // -------------------------------------------------------------------------
             // Authorize the Dev Hub org with JWT key and give it an alias.
